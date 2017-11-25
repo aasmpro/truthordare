@@ -7,7 +7,7 @@ each time it will print two names and the act to be done by second player like t
 
 person_1  :  person_2  >>  truth
 
-    so person_1 ask a question from person_2, so player_2 must answer it.
+    person_1 ask a question from person_2, so player_2 must answer it.
     
 person_1  :  person_2  >>  bravery
 
