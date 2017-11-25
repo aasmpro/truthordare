@@ -11,4 +11,4 @@ person_1  :  person_2  >>  truth
     
 person_1  :  person_2  >>  bravery
 
-    this time person_1 will ask person_2 to do something, so player_2 must answer it.
+    this time person_1 will ask person_2 to do something, so player_2 must do it.
