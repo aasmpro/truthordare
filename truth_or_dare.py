@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-    bravery or truth
-    just for fun!
-    done by < aa.smpro@gmail.com >
-"""
 from random import *
 
 players_num = int(input('number of players : '))
 players = [[input(('player {} name : ').format(i + 1)) or str(i + 1), 'truth'] for i in range(0, players_num)]
 last_player = randint(0, players_num - 1)
 last_player_2 = last_player
-exchange = {"truth": "bravery", "bravery": "truth", }
+exchange = {"truth": "dare", "dare": "truth", }
 while True:
     next_player = randint(0, players_num - 1)
     if last_player is not next_player and next_player is not last_player_2:
