@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Truth OR Dare</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Bootstrap core CSS -->
+    <!--    <link rel="stylesheet" href="static/css/bootstrap.css">-->
+
+    <!-- webfonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <style>
+        html,
+        body {
+            height: 100% !important;
+            color: white;
+            background-color: #2b2d42;
+            font-family: 'Roboto Mono', monospace;
+            text-align: left;
+        }
+
+        input, button, input:focus, button:focus {
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .container-fluid {
+            position: fixed;
+            bottom: 0;
+        }
+
+        .container-fluid .row {
+            padding-bottom: 55px;
+            padding-top: 20px;
+        }
+
+        .toast {
+            z-index: 10;
+            position: fixed;
+            width: 97%;
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+
+        .toast-body {
+            font-size: 1.2em;
+            text-align: center;
+            background-color: #d90429;
+            padding: 6px;
+        }
+
+        .toast-body > span, .toast-body > a {
+            position: fixed;
+            top: 1px;
+            padding: 5px 15px;
+            background-color: #fff;
+            color: #d90429;
+            z-index: 11;
+            text-decoration: none;
+        }
+
+        .toast-body span:last-child, .toast-body a:last-child {
+            left: 1px;
+        }
+
+        .toast-body span:first-child, .toast-body a:first-child {
+            right: 1px;
+        }
+
+        .toast-body input, .toast-body input:focus {
+            background-color: #2b2d42;
+            color: #fff;
+        }
+
+        .modal .toast-body span {
+            color: #2b2d42;
+        }
+
+        #settings-modal {
+            background-color: #d90429;
+        }
+
+        .modal-dialog button, .modal-dialog button:hover {
+            background-color: #2b2d42;
+            color: #fff;
+        }
+
+        .modal-content {
+            position: fixed;
+            border: none;
+            box-shadow: none;
+            background-color: rgba(0, 0, 0, 0);
+            bottom: 10px;
+            left: 50%;
+            transform: translate(-50%, 0);;
+            padding-bottom: 45px;
+        }
+
+        #play-button {
+            padding: 100px;
+        }
+
+        .card {
+            background-color: #d90429;
+            border: none;
+            margin-bottom: 10px;
+        }
+
+        .card-body {
+            padding: 8px;
+            border: none;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column">
+<div id="trust_or_dare">
+    <div class="modal h-100 w-100" id="settings-modal" tabindex="-1"
+         aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="toast rounded-pill border-white p-0" role="alert" aria-live="assertive" aria-atomic="true"
+             data-autohide="false">
+            <div class="toast-body text-white p-0">
+            <span type="button" class="rounded-pill" v-on:click="addPlayer">
+                <span class="fas fa-plus"></span>
+            </span>
+                <input type="text" class="form-control form-inline rounded-pill text-center m-0"
+                       placeholder="player name" v-model="newPlayerName" value="{{newPlayerName}}">
+                <span class="rounded-pill" data-toggle="modal" data-target="#settings-modal">
+                <span class="fas fa-times"></span>
+            </span>
+            </div>
+        </div>
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content col-sm-5" id="players-list">
+                <div class="modal-body">
+                    <player
+                            v-for="(player, index) in players"
+                            v-bind:player="player"
+                            v-bind:key="player.name"
+                            v-bind:index="index"
+                            v-on:click="deletePlayer"
+                    ></player>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast rounded-pill border-white" role="alert" aria-live="assertive" aria-atomic="true"
+         data-autohide="false">
+        <div class="toast-body text-white" type="button">
+        <span type="button" class="rounded-pill" data-toggle="modal" data-target="#settings-modal">
+            <span class="fas fa-cog"></span>
+        </span>
+            <strong v-on:click="play" id="play-button">Play!</strong>
+            <a href="https://github.com/aasmpro/truth_or_dare" type="button" class="rounded-pill">
+                <span class="fab fa-github"></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row justify-content-center align-items-end">
+            <div class="col-sm-5">
+                <card
+                        v-for="card in cards"
+                        v-bind:card="card"
+                        v-bind:key="card.message"
+                ></card>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap core JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+<!-- Bootstrap core JS -->
+<!--<script src="static/js/jquery-3.3.1.slim.js"></script>-->
+<!--<script src="static/js/popper.js"></script>-->
+<!--<script src="static/js/bootstrap.js"></script>-->
+<!--<script src="static/js/vue.js"></script>-->
+<script>
+    $(document).ready(function () {
+        $('.toast').toast('show');
+    });
+
+    Vue.component('card', {
+        props: ['card'],
+        template: `
+        <div class="card rounded-pill text-center">
+            <div class="card-body">
+                <strong>{{card.message}}</strong>
+                <span :class="[ card.turn ]"></span>
+            </div>
+        </div>
+        `,
+        data: {
+            classObject: "asdf"
+        }
+    });
+
+    Vue.component('player', {
+        props: ['player', 'index'],
+        template: '<button @click="deletePlayer" class="btn btn-block rounded-pill"><strong>{{player.name}}</strong></button>',
+        methods: {
+            deletePlayer: function () {
+                this.$parent.$delete(this.$parent.players, this.index)
+            }
+        }
+    });
+
+    var trust_or_dare = new Vue({
+        el: '#trust_or_dare',
+        data: {
+            players: [],
+            newPlayerName: "",
+            lastPlayers: [],
+            cards: []
+        },
+        methods: {
+            addPlayer: function () {
+                var found = true;
+                this.players.forEach(function (player) {
+                    if (player.name === trust_or_dare.newPlayerName) {
+                        found = false;
+                    }
+                });
+                if (this.newPlayerName !== "" && found) {
+                    this.players.push({name: this.newPlayerName, turn: "truth"});
+                    this.newPlayerName = "";
+                }
+            },
+            play: function () {
+                var numberOfPlayers = this.players.length;
+                if (numberOfPlayers < 2) {
+                    this.cards.push({
+                        message: "You need at least 2 players to play click ",
+                        turn: 'fas fa-cog'
+                    });
+                } else {
+                    while (this.lastPlayers.length > Math.floor(numberOfPlayers / 2)) {
+                        try {
+                            this.$delete(this.lastPlayers, 0);
+                        } catch (e) {
+                            break
+                        }
+                    }
+                    var nextPlayer = Math.floor(Math.random() * numberOfPlayers);
+                    while (this.lastPlayers.includes(nextPlayer)) {
+                        nextPlayer = Math.floor(Math.random() * numberOfPlayers);
+                    }
+                    var player = this.players[nextPlayer];
+                    this.cards.push({
+                        message: player.name,
+                        turn: player.turn === 'truth' ? "fas fa-question" : "fas fa-bomb"
+                    });
+                    if (player.turn === 'dare') {
+                        player.turn = 'truth'
+                    } else {
+                        player.turn = 'dare'
+                    }
+                    this.lastPlayers.push(nextPlayer)
+
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>
